@@ -13,8 +13,12 @@ POST [/api/login](https://cleveradssolutions.com/api/login)
 { "access_token": "Auth token" }
 ```
 
-Use token for Authorization every API request using the Bearer scheme (Example: 'Bearer $yourToken')  
+Use token for Authorization every API request using the Bearer scheme. For example in request header:
+```
+Authorization: Bearer <access_token>
+```
 Token lifetime: 15 minutes.
+
 
 ## Ad Sources
 GET [/api/mediation/adsources](https://cleveradssolutions.com/api/mediation/adsources)
