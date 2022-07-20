@@ -70,7 +70,7 @@ NO Parameters
 | App_ID | integer | App database id |
 | Bundle_ID | string | App bundle id |
 | Name | string | App name |
-| Status | string | App status can be: `active|test|inactive` |
+| Status | string | App status can be: `active` or `test` or `inactive` |
 
 ## Countries
 GET [/api/mediation/country](https://cleveradssolutions.com/api/mediation/country)
