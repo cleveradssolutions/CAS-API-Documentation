@@ -1,4 +1,4 @@
-# CAS.AI API Documentation
+# CAS.AI Reporting API
 This guide is for developers who want to use the CAS.AI API to programmatically get information about their CAS.AI account.
 
 The CAS.AI API is built on HTTP and JSON, so any standard HTTP client can send requests to it and parse the responses.
@@ -26,12 +26,73 @@ Authorization: Bearer <access_token>
 > [!NOTE]  
 > Token lifetime: 15 minutes.
 
-## Ad Format id
-- 1 - Banner
-- 2 - Interstitial
-- 3 - Rewarded
+## Mediation report
+```
+https://b2b.cas.ai/api/mediation/data
+```
 
-## Ad Sources list
+### POST Request body: application/json
+Request object structure:
+
+| Field     | Type             | Description                                                                 |
+| --------- | ---------------- | --------------------------------------------------------------------------- |
+| filter    | array of objects | Mandatory filter options for report. See [table of filter](#filters) below. |
+| columns   | array of objects | List of columns for report. See [table of columns](#columns) below.         |
+| calcTotal | boolean          | Append total row for report. (`true` or `false`)                            |
+| currency  | string           | Currency of revenue, `euro` or `usd` supported only.                        |
+
+#### Filters
+The filter options have the following structure:
+```json
+"filter": [
+    { "type": "app", "value": 1 },
+    { "type": "app", "value": 2 }
+]
+```
+
+| Filter type | Description                                                                                                  | Value Example                                                     |
+| ----------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| `date`      | (Required) The first and last days you want in the report, in `«YYYY»-«MM»-«DD»` format.                     | `"value": { "beginDate": "YYYY-MM-DD", "endDate": "YYYY-MM-DD" }` |
+| `app`       | Report for selected application(s) id. Use id from [Applications Ids list](#applications-ids-list) response. | `"value": 1`                                                      |
+| `country`   | Report for selected country(s) id. Use id from [Countries Ids list](#countries-ids-list) response.           | `"value": 4`                                                      |
+| `format`    | Report for selected format(s) id. See [table of ad format ids](#ad-format-ids) below.                        | `"value": 2`                                                      |
+| `ad_source` | Report for selected ad source(s) id. Use id from [Ad Sources Ids list](#ad-sources-Ids-list) response.       | `"value": 3`                                                      |
+
+> [!WARNING]
+> You must add `date` filter for each report request.
+
+#### Columns
+The filter options have the following structure:
+```json
+"columns": [
+    { "id": "app" },
+    { "type": "date" }
+]
+```
+
+| Column id                   | Description                                                                                  |
+| --------------------------- | -------------------------------------------------------------------------------------------- |
+| `ad_source`                 | Ad source id column. Use id from [Ad Sources Ids list](#ad-sources-Ids-list) response.       |
+| `app`                       | Application id column. Use id from [Applications Ids list](#applications-ids-list) response. |
+| `date` or `week` or `month` | Date, Week or Month column                                                                   |
+| `country`                   | Country id column. Use id from [Countries Ids list](#countries-ids-list) response.           |
+| `format`                    | Ad Format id column. See [table of ad format ids](#ad-format-ids) below.                     |
+| `platform`                  | Application name platform column                                                             |
+| `impressions`               | Number of impressions shown                                                                  |
+| `observed_ecpm`             | Observed ECPM column                                                                         |
+| `est_earnings`              | Estimated earnings column                                                                    |
+| `dau`                       | DAU column. Available only if `ad_source` and `format` columns not requested.                |
+| `arpu`                      | ARPU column. Available only if `ad_source` and `format` columns not requested.               |
+
+## Ad Format ids
+
+| Id  | Name            |
+| --- | --------------- |
+| 1   | Banner Ad       |
+| 2   | Interstitial Ad |
+| 3   | Rewarded Ad     |
+
+## Ad Sources Ids list
 ```
 https://b2b.cas.ai/api/mediation/adsources
 ```
@@ -52,14 +113,14 @@ NO Parameters
 ]
 ```
 
-#### Array of objects with structure
-| Field | Type | Description |
-|---|---|---|
-| Id | integer | Ad source id |
-| AdSource_Name | string | Ad source name |
+Array of objects with structure
 
+| Field         | Type    | Description           |
+| ------------- | ------- | --------------------- |
+| Id            | integer | Ad source database id |
+| AdSource_Name | string  | Name of the Ad Source |
 
-## Countries list
+## Countries Ids list
 ```
 https://b2b.cas.ai/api/mediation/country
 ```
@@ -85,14 +146,14 @@ NO Parameters
 ]
 ```
 
-#### Array of objects with structure
-| Field | Type | Description |
-|---|---|---|
-| Id | integer | Country database id |
-| Country_Name | string | Country bundle id |
+Array of objects with structure
 
+| Field        | Type    | Description         |
+| ------------ | ------- | ------------------- |
+| Id           | integer | Country database id |
+| Country_Name | string  | Name of the Country |
 
-## Applications list
+## Applications Ids list
 ```
 https://b2b.cas.ai/api/mediation/apps
 ```
@@ -117,112 +178,16 @@ NO Parameters
 ]
 ```
 
-#### Array of objects with structure
-| Field | Type | Description |
-|---|---|---|
-| App_ID | integer | App database id |
-| Bundle_ID | string | App bundle id |
-| Name | string | App name |
-| Status | string | App status can be: `active` or `test` or `inactive` |
+Array of objects with structure
 
-# Mediation report
-```
-https://b2b.cas.ai/api/mediation/data
-```
+| Field     | Type    | Description                              |
+| --------- | ------- | ---------------------------------------- |
+| App_ID    | integer | Database id                              |
+| Bundle_ID | string  | Android bundle name or iTunes Id         |
+| Name      | string  | Name of the application.                 |
+| Status    | string  | Status: `active` or `test` or `inactive` |
 
-### POST Request body: application/json
-Request object structure:
-| Field | Type | Description |
-|---|---|---|
-| filter | array of objects | Mandatory filter options for report. |
-| columns | array of objects | List of columns for report. |
-| calcTotal | boolean | Append total row for report. |
-| currency | string | Currency of revenue. Supported only: `euro` or `usd` |
-
-#### Filter array options:
-- Start/End date for report
-
-> [!WARNING]  
-> Required date filter for each request.
-
-```json
-{
-    "type": "date",
-    "value": {
-        "beginDate": "YYYY-MM-DD",
-        "endDate": "YYYY-MM-DD"
-    }
-}
-```
-- Report for selected application(s) id. Append to filter separated object for each applications.
-```json
-{ "type": "app", "value": 1 }
-```
-- Report for selected country(s) id. Append to filter separated object for each country.
-```json
-{ "type": "country", "value": 4 }
-```
-- Report for selected format(s) id. Append to filter separated object for each format.
-```json
-{ "type": "format", "value": 2 }
-```
-- Report for selected ad source(s) id. Append to filter separated object for each ad source.
-```json
-{ "type": "ad_source", "value": 3 }
-```
-#### Column array options:
-- Add Ad source column to response
-```json
-{ "id": "ad_source" }
-```
-- Add Application column to response
-```json
-{ "id": "app" }
-```
-- Add Date, Week or Month column to response
-```json
-{ "id": "date | week | month" }
-```
-- Add Country column to response
-```json
-{ "id": "country" }
-```
-- Add Format column to response
-```json
-{ "id": "format" }
-```
-- Add Application platform column to response
-```json
-{ "id": "platform" }
-```
-- Add DAU column to response
-```json
-{ "id": "dau" }
-```
-> [!WARNING]  
-> Available only without "ad_source" and "format" selection.
-
-- Add ARPU column to response
-```json
-{ "id": "arpu" }
-```
-> [!WARNING]  
-> Available only without "ad_source" and "format" selection.
-
-- Add Impressions column to response
-```json
-{ "id": "impressions" }
-```
-- Add Observed ECPM column to response
-```json
-{ "id": "observed_ecpm" }
-```
-- Add Estimated earnings column to response
-```json
-{ "id": "est_earnings" }
-```
-
-#### POST Request example:
+## Mediation report POST Request example
 ```json
 {
     "filter": [
@@ -248,7 +213,7 @@ Request object structure:
 }
 ```
 
-### Response: JSON
+## Mediation report response example
 ```json
 {
     "list": [
