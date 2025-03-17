@@ -91,6 +91,9 @@ The filter options have the following structure:
 | 1   | Banner Ad       |
 | 2   | Interstitial Ad |
 | 3   | Rewarded Ad     |
+| 4   | Native Ad       |
+| 5   | AppOpen Ad      |
+| 6   | In Game Ad      |
 
 ## Ad Sources Ids list
 ```
